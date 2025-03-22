@@ -3,49 +3,50 @@ import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 import { NEXTAUTH_SECRET } from "./lib/constant";
 
+const PUBLIC_ROUTES = ["/", "/login", "/unauthorized"];
+const ROLE_REDIRECTS: Record<string, string> = {
+  koordinator: "/koordinator",
+  dosen: "/dosen",
+  mahasiswa: "/mahasiswa",
+};
+const PROTECTED_ROUTES = ["koordinator", "dosen", "mahasiswa"];
+
+const redirectTo = (path: string, request: NextRequest) =>
+  NextResponse.redirect(new URL(path, request.url));
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = await getToken({
-    req: request,
-    secret: NEXTAUTH_SECRET,
-  });
 
-  console.log(`Middleware running for path: ${pathname}`);
-
+  const token = await getToken({ req: request, secret: NEXTAUTH_SECRET });
   const isAuthenticated = !!token;
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
-  const isPublicRoute =
-    pathname === "/" || pathname === "/login" || pathname === "/unauthorized";
-
-  // redirect to role dashboard if authenticated
-  if ((pathname === "/" || pathname === "/login") && isAuthenticated) {
+  // redirect authenticated user from protected route to dashboard based on role
+  if (isAuthenticated && (pathname === "/" || pathname === "/login")) {
     const role = token.role;
-
-    if (role === "koordinator") {
-      return NextResponse.redirect(new URL("/koordinator", request.url));
-    } else if (role === "dosen") {
-      return NextResponse.redirect(new URL("/dosen", request.url));
-    } else if (role === "mahasiswa") {
-      return NextResponse.redirect(new URL("/mahasiswa", request.url));
+    const redirectPath = ROLE_REDIRECTS[role];
+    if (redirectPath) {
+      return redirectTo(redirectPath, request);
     }
   }
 
-  // redirect to login if the route is not public and user is not authenticated
+  // redirect unauthenticated user to login page
   if (!isPublicRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirectTo("/login", request);
   }
 
+  // the requested protected route
   if (isAuthenticated) {
     const role = token.role;
+    const requestedRole = PROTECTED_ROUTES.find((r) =>
+      pathname.startsWith(`/${r}`)
+    );
 
-    if (pathname.startsWith("/koordinator") && role !== "koordinator") {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    } else if (pathname.startsWith("/dosen") && role !== "dosen") {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    } else if (pathname.startsWith("/mahasiswa") && role !== "mahasiswa") {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    if (requestedRole && role !== requestedRole) {
+      return redirectTo("/unauthorized", request);
     }
   }
+
   return NextResponse.next();
 }
 
