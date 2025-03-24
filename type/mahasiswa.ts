@@ -1,10 +1,22 @@
-export type Mahasiswa = {
-  id: string;
+export interface Mahasiswa {
+  id?: number;
+  user_id?: number;
   nim: string;
-  nama: string;
+  name: string;
   email: string;
-  telepon: string;
-  foto: string;
-  dosen_pembimbing_id: string;
-  dosen_pembimbing_nama: string;
-};
+  telepon?: string;
+  password?: string;
+  foto?: string;
+}
+
+export interface MahasiswaResponse {
+  success: boolean;
+  message: string;
+  data: Mahasiswa[];
+  meta: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+  };
+}

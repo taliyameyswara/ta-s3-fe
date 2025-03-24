@@ -1,7 +1,8 @@
 export type Dosen = {
-  id: string;
+  id?: number;
+  user_id?: number;
   npp: string;
-  nama: string;
+  name: string;
   email: string;
   bidang_kajian: string;
   scholar_link: string;

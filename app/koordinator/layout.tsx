@@ -4,7 +4,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { NavMain } from "@/components/nav-main";
 import { NavMenu } from "@/components/nav-menu";
 import { SidebarProvider } from "@/components/ui/sidebar";
-
 import { BookText, Home, User } from "lucide-react";
 
 const sidebarData = {
@@ -59,7 +58,7 @@ export default function KoordinatorLayout({
         }
       />
       <main className="hidden lg:flex flex-col w-full p-4 my-4 ml-4 mr-4 bg-white border lg:ml-0 rounded-xl">
-        <div className="">{children}</div>
+        <div>{children}</div>
       </main>
     </SidebarProvider>
   );
