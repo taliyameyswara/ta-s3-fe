@@ -21,6 +21,13 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!token;
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
+  if (
+    !token ||
+    (typeof token.exp === "number" && Date.now() >= token.exp * 1000)
+  ) {
+    return redirectTo("/login", request);
+  }
+
   // redirect authenticated user from protected route to dashboard based on role
   if (isAuthenticated && (pathname === "/" || pathname === "/login")) {
     const role = token.role;
