@@ -3,88 +3,82 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { API_URL } from "../constant";
 
-export async function fetchWithAuth(
-  endpoint: string,
-  options: RequestInit = {}
-) {
+interface FetchOptions extends RequestInit {
+  headers?: Record<string, string>;
+  responseType?: "json" | "blob";
+}
+
+export async function fetchWithAuth(endpoint: string, options: FetchOptions) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.token) {
-    throw new Error("No authentication token found");
+    return { success: false, message: "No authentication token found" };
   }
 
-  const headers = {
-    Authorization: session.user.token,
-    ...options.headers,
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        Authorization: session.user.token,
+        Accept: "application/json",
+        ...options.headers,
+      },
+    });
+
+    console.log("Request:", endpoint, options);
+
+    if (!response.ok) {
+      const errorResponse = await response.json().catch(() => ({
+        message: `API error: ${response.status}`,
+      }));
+      return { success: false, ...errorResponse };
+    }
+
+    return {
+      success: true,
+      data:
+        options.responseType === "blob"
+          ? await response.blob()
+          : await response.json(),
+      message: response.status,
+    };
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { success: false, message: "Network error or API is unreachable" };
+  }
+}
+
+const createRequest =
+  (method: string) =>
+  async (
+    endpoint: string,
+    data?: any,
+    headers: Record<string, string> = {},
+    responseType: "json" | "blob" = "json"
+  ) => {
+    const options: FetchOptions = { method, headers, responseType };
+
+    if (data && method !== "GET") {
+      options.body = data instanceof FormData ? data : JSON.stringify(data);
+      if (!(data instanceof FormData) && !headers["Content-Type"]) {
+        options.headers = {
+          "Content-Type": "application/json",
+          ...headers,
+        };
+      }
+    }
+
+    const response = await fetchWithAuth(endpoint, options);
+
+    if (!response.success) {
+      throw new Error(response.message || "Request failed");
+    }
+
+    return response.data;
   };
 
-  // console.log(endpoint, options);
-
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error?.message || `API error: ${response.status}`);
-  }
-
-  return response;
-}
-
-// Helper for GET requests
-export async function get(
-  endpoint: string,
-  options: {
-    headers?: Record<string, string>;
-    responseType?: "json" | "blob";
-  } = {}
-) {
-  const response = await fetchWithAuth(endpoint, {
-    headers: options.headers,
-  });
-  return options.responseType === "blob" ? response.blob() : response.json();
-}
-
-// Helper for POST requests
-export async function post(
-  endpoint: string,
-  data: any,
-  headers?: Record<string, string>
-) {
-  const response = await fetchWithAuth(endpoint, {
-    method: "POST",
-    body: data instanceof FormData ? data : JSON.stringify(data),
-    headers:
-      headers ||
-      (data instanceof FormData ? {} : { "Content-Type": "application/json" }),
-  });
-  return response.json();
-}
-
-// Helper for PUT requests
-export async function put(
-  endpoint: string,
-  data: any,
-  headers?: Record<string, string>
-) {
-  const response = await fetchWithAuth(endpoint, {
-    method: "PUT",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
-  });
-  return response.json();
-}
-
-// Helper for DELETE requests
-export async function del(endpoint: string, headers?: Record<string, string>) {
-  const response = await fetchWithAuth(endpoint, {
-    method: "DELETE",
-    headers,
-  });
-  return response.json();
-}
+export const get = (endpoint: string, responseType: "json" | "blob" = "json") =>
+  createRequest("GET")(endpoint, undefined, {}, responseType);
+export const post = createRequest("POST");
+export const put = createRequest("PUT");
+export const del = createRequest("DELETE");

@@ -32,64 +32,87 @@ export default async function getListMahasiswa(
 }
 
 export async function getMahasiswaById(id: string) {
-  try {
-    const response = await get(`/mahasiswa/${id}`);
-    return response;
-  } catch (error) {
-    console.error(`Error fetching mahasiswa with ID ${id}:`, error);
-    throw error;
+  const response = await get(`/mahasiswa/${id}`);
+
+  if (!response.success) {
+    console.log(`Error updating mahasiswa with ID ${id}:`, response.message);
+    throw new Error(response.message);
   }
+
+  return {
+    success: response.success,
+    data: response.data,
+    message: response.message,
+  };
 }
 
 export async function addMahasiswa(data: Mahasiswa) {
-  try {
-    const response = await post("/mahasiswa", data);
-    return response;
-  } catch (error) {
-    console.error("Error adding mahasiswa:", error);
-    throw error;
+  const response = await post(`/mahasiswa`, data);
+
+  if (!response.success) {
+    console.log(`Error add mahasiswa`, response.message);
+    throw new Error(response.message);
   }
+
+  return {
+    success: response.success,
+    data: response.data,
+    message: response.message,
+  };
 }
 
 export async function updateMahasiswa(id: string, data: Mahasiswa) {
-  try {
-    const response = await put(`/mahasiswa/${id}`, data);
-    return response;
-  } catch (error) {
-    console.error(`Error updating mahasiswa with ID ${id}:`, error);
-    throw error;
+  const response = await put(`/mahasiswa/${id}`, data);
+
+  if (!response.success) {
+    console.log(`Error updating mahasiswa with ID ${id}:`, response.message);
+    throw new Error(response.message);
   }
+
+  return {
+    success: response.success,
+    data: response.data,
+    message: response.message,
+  };
 }
 
 export async function deleteMahasiswa(id: string) {
-  try {
-    const response = await del(`/mahasiswa/${id}`);
-    return response;
-  } catch (error) {
-    console.error(`Error deleting mahasiswa with ID ${id}:`, error);
-    throw error;
+  const response = await del(`/mahasiswa/${id}`);
+
+  if (!response.success) {
+    console.log(`Error deleting mahasiswa with ID ${id}:`, response.message);
+    throw new Error(response.message);
   }
+
+  return {
+    success: response.success,
+    data: response.data,
+    message: response.message,
+  };
 }
 
 export async function getExcelTemplate(): Promise<Blob> {
   try {
-    const response = await get("/mahasiswa/example-import", {
-      responseType: "blob",
-    });
-    return response;
+    const response = await get("/mahasiswa/example-import", "blob");
+    return response as Blob;
   } catch (error) {
     throw error;
   }
 }
 
 export async function importExcelData(data: FormData) {
-  try {
-    const response = await post("/mahasiswa/import", data);
-    return response;
-  } catch (error) {
-    console.error(`Error:`, error);
-    throw error;
+  const response = await post("/mahasiswa/import", data);
+
+  if (!response.success) {
+    console.log(`Error importing data mahasiswa: `, response.message);
+    throw new Error(response.message);
   }
+
+  return {
+    success: response.success,
+    data: response.data,
+    message: response.message,
+  };
 }
 
 export async function getDosen() {
