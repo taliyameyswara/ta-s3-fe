@@ -22,8 +22,9 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
   if (
-    !token ||
-    (typeof token.exp === "number" && Date.now() >= token.exp * 1000)
+    (!token ||
+      (typeof token.exp === "number" && Date.now() >= token.exp * 1000)) &&
+    pathname !== "/login"
   ) {
     return redirectTo("/login", request);
   }
