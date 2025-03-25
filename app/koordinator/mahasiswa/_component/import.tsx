@@ -47,7 +47,7 @@ export default function ImportMahasiswaButton() {
       toast.success("Template berhasil diunduh");
     } catch (error) {
       console.error("Error downloading template:", error);
-      toast.error("Gagal mengunduh template");
+      toast.error((error as Error).message);
     } finally {
       setIsDownloading(false);
     }
@@ -63,10 +63,10 @@ export default function ImportMahasiswaButton() {
     try {
       const response = await importExcelData(formData);
       console.log("Import response:", response);
-      toast.success("Data mahasiswa berhasil diimpor");
+      toast.success(response.message);
     } catch (error) {
       console.error("Error importing file:", error);
-      toast.error("Gagal mengimpor data mahasiswa");
+      toast.error((error as Error).message);
     } finally {
       setIsImporting(false);
       setFile(null);

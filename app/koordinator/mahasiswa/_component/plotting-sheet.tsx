@@ -129,7 +129,6 @@ export function PlottingSheet({
         throw new Error(result.message || "Failed to save plotting");
       }
     } catch (error) {
-      console.error("Error saving plotting:", error);
       toast.error(
         error instanceof Error
           ? error.message
@@ -356,7 +355,7 @@ export function PlottingSheet({
           </div>
         )}
 
-        <SheetFooter>
+        <SheetFooter className="grid grid-cols-2 gap-2">
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             Batal
           </Button>

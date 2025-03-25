@@ -37,8 +37,8 @@ export function DeleteMahasiswaDialog({
 
     toast.promise(deletePromise, {
       loading: "Menghapus data mahasiswa...",
-      success: "Data mahasiswa berhasil dihapus!",
-      error: "Gagal menghapus data mahasiswa!",
+      success: "Data mahasiswa berhasil dihapus",
+      error: "Gagal menghapus data mahasiswa",
     });
   };
 

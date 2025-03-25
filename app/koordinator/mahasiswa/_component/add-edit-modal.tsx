@@ -136,19 +136,19 @@ export function AddEditMahasiswaModal({
     setIsLoading(true);
 
     try {
+      let response;
       if (isEdit && mahasiswa?.id) {
-        await updateMahasiswa(mahasiswa.id.toString(), formData);
-        toast.success("Data mahasiswa berhasil diperbarui");
+        response = await updateMahasiswa(mahasiswa.id.toString(), formData);
       } else {
-        await addMahasiswa(formData);
-        toast.success("Data mahasiswa berhasil ditambahkan");
+        response = await addMahasiswa(formData);
       }
 
+      toast.success(response.message);
       router.refresh();
       onClose();
     } catch (error) {
-      console.error("Error saving mahasiswa:", error);
-      toast.error("Gagal menyimpan data mahasiswa");
+      console.log("Error saving mahasiswa:", error);
+      toast.error((error as Error).message);
     } finally {
       setIsLoading(false);
     }
