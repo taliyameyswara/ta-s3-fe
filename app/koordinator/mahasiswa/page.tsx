@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { MahasiswaContent } from "./_component/content";
+import { MahasiswaContent } from "./_components/content";
 import Loading from "./loading";
 
 export default async function MahasiswaPage({
