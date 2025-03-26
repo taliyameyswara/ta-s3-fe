@@ -10,15 +10,12 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
-interface MahasiswaPaginationProps {
+interface PaginationProps {
   currentPage: number;
   totalPages: number;
 }
 
-export function MahasiswaPagination({
-  currentPage,
-  totalPages,
-}: MahasiswaPaginationProps) {
+export function Pagination({ currentPage, totalPages }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

@@ -1,24 +1,25 @@
-import DashboardHeader from "@/components/dashboard-header";
+import { Suspense } from "react";
+import Loading from "./loading";
+import { DosenContent } from "./_components/content";
 
-const DosenKoordinator = () => {
+export default async function MahasiswaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: number; search?: string; limit?: number }>;
+}) {
+  const { page = "1", search = "", limit = "10" } = await searchParams;
+  const pageNum = Number(page) || 1;
+  const searchQuery = search || undefined;
+  const limitNum = Number(limit) || 10;
+  const suspenseKey = `page=${pageNum}${
+    searchQuery ? `&search=${searchQuery}` : ""
+  }&limit=${limitNum}`;
+
   return (
-    <>
-      <DashboardHeader
-        breadcrumbItems={[
-          { name: "Dashboard", url: "koordinator" },
-          { name: "Mahasiswa", url: "koordinator/mahasiswa" },
-        ]}
-        titleItems={[
-          {
-            title: `Dosen Pembimbing`,
-            subtitle:
-              "Berikut adalah data mahasiswa bimbingan dari Tugas Akhir",
-          },
-        ]}
-      />
-      <div className="flex flex-col justify-center"></div>
-    </>
+    <div>
+      <Suspense key={suspenseKey} fallback={<Loading />}>
+        <DosenContent page={pageNum} search={searchQuery} limit={limitNum} />
+      </Suspense>
+    </div>
   );
-};
-
-export default DosenKoordinator;
+}

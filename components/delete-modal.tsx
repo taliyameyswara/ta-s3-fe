@@ -13,32 +13,38 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteMahasiswa } from "@/lib/api/mahasiswa";
 import { toast } from "sonner";
+import { deleteDosen } from "@/lib/api/dosen";
 
-interface DeleteMahasiswaDialogProps {
+interface DeleteDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  mahasiswaId: string | number;
-  mahasiswaName: string;
+  entityId: string | number;
+  entityName: string;
+  isMahasiswa: boolean;
 }
 
-export function DeleteMahasiswaDialog({
+export function DeleteDialog({
   isOpen,
   onClose,
-  mahasiswaId,
-  mahasiswaName,
-}: DeleteMahasiswaDialogProps) {
+  entityId,
+  entityName,
+  isMahasiswa,
+}: DeleteDialogProps) {
   const router = useRouter();
 
+  const entityType = isMahasiswa ? "Mahasiswa" : "Dosen";
+  const deleteFunction = isMahasiswa ? deleteMahasiswa : deleteDosen;
+
   const handleDelete = () => {
-    const deletePromise = deleteMahasiswa(mahasiswaId.toString()).then(() => {
+    const deletePromise = deleteFunction(entityId.toString()).then(() => {
       router.refresh();
       onClose();
     });
 
     toast.promise(deletePromise, {
-      loading: "Menghapus data mahasiswa...",
-      success: "Data mahasiswa berhasil dihapus",
-      error: "Gagal menghapus data mahasiswa",
+      loading: `Menghapus data ${entityType.toLowerCase()}...`,
+      success: `Data ${entityType.toLowerCase()} berhasil dihapus`,
+      error: `Gagal menghapus data ${entityType.toLowerCase()}`,
     });
   };
 
@@ -46,11 +52,10 @@ export function DeleteMahasiswaDialog({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Hapus Data Mahasiswa</AlertDialogTitle>
+          <AlertDialogTitle>Hapus Data {entityType}</AlertDialogTitle>
           <AlertDialogDescription>
-            Apakah Anda yakin ingin menghapus data mahasiswa{" "}
-            <strong>{mahasiswaName}</strong>? Tindakan ini tidak dapat
-            dibatalkan.
+            Apakah Anda yakin ingin menghapus data {entityType.toLowerCase()}{" "}
+            <strong>{entityName}</strong>? Tindakan ini tidak dapat dibatalkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

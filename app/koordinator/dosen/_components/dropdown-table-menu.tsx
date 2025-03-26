@@ -8,38 +8,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Mahasiswa } from "@/type/mahasiswa";
-import { MoreHorizontal, Pencil, Trash2, UserCog } from "lucide-react";
-import { AddEditMahasiswaModal } from "./add-edit-modal";
-import { PlottingSheet } from "./plotting-sheet";
+import { Dosen } from "@/type/dosen";
+import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { AddEditDosenModal } from "./add-edit-modal";
 import { DeleteDialog } from "@/components/delete-modal";
 
 interface DropdownTableMenuProps {
-  mahasiswa: Mahasiswa;
+  dosen: Dosen;
 }
 
-export default function DropdownTableMenu({
-  mahasiswa,
-}: DropdownTableMenuProps) {
+export default function DropdownTableMenu({ dosen }: DropdownTableMenuProps) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(
-    null
-  );
-  const [plottingSheetOpen, setPlottingSheetOpen] = useState(false);
+  const [selectedDosen, setSelectedDosen] = useState<Dosen | null>(null);
 
   const handleEditClick = () => {
-    setSelectedMahasiswa(mahasiswa);
+    setSelectedDosen(dosen);
     setEditModalOpen(true);
   };
 
   const handleDeleteClick = () => {
-    setSelectedMahasiswa(mahasiswa);
+    setSelectedDosen(dosen);
     setDeleteDialogOpen(true);
-  };
-
-  const handlePlottingClick = () => {
-    setPlottingSheetOpen(true);
   };
 
   return (
@@ -52,52 +43,49 @@ export default function DropdownTableMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleEditClick}>
-            <Pencil className="mr-2 size-4" />
-            Edit
+          <DropdownMenuItem>
+            <Link
+              href={`/koordinator/dosen/${dosen.id}`}
+              className="cursor-pointer flex items-center"
+            >
+              <Eye className="size-4 mr-2" />
+              <span>Detail</span>
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handlePlottingClick}>
-            <UserCog className="mr-2 size-4" />
-            Plotting
+          <DropdownMenuItem onClick={handleEditClick}>
+            <Pencil className="size-4" />
+            Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={handleDeleteClick}
             className="text-destructive focus:text-destructive"
           >
-            <Trash2 className="mr-2 size-4 text-destructive" />
+            <Trash2 className="size-4 text-destructive" />
             Hapus
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       {/* Edit Modal */}
-      {selectedMahasiswa && (
-        <AddEditMahasiswaModal
+      {selectedDosen && (
+        <AddEditDosenModal
           isOpen={editModalOpen}
           onClose={() => setEditModalOpen(false)}
-          mahasiswa={selectedMahasiswa}
+          dosen={selectedDosen}
           isEdit={true}
         />
       )}
 
       {/* Delete Dialog */}
-      {selectedMahasiswa && (
+      {selectedDosen && (
         <DeleteDialog
           isOpen={deleteDialogOpen}
           onClose={() => setDeleteDialogOpen(false)}
-          entityName={selectedMahasiswa.name}
-          entityId={selectedMahasiswa.id || 0}
-          isMahasiswa={true}
+          entityName={selectedDosen.name}
+          entityId={selectedDosen.id || 0}
+          isMahasiswa={false}
         />
       )}
-
-      {/* Plotting sheet */}
-      <PlottingSheet
-        isOpen={plottingSheetOpen}
-        onClose={() => setPlottingSheetOpen(false)}
-        mahasiswaId={mahasiswa.id || 0}
-        mahasiswaName={mahasiswa.name}
-      />
     </>
   );
 }

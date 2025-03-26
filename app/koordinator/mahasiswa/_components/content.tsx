@@ -1,5 +1,6 @@
+import { Pagination } from "@/components/pagination";
 import { MahasiswaTable } from "./table";
-import { MahasiswaPagination } from "./pagination";
+
 import getListMahasiswa from "@/lib/api/mahasiswa";
 
 export async function MahasiswaContent({
@@ -16,7 +17,7 @@ export async function MahasiswaContent({
   return (
     <>
       <MahasiswaTable data={mahasiswaData?.data || []} />
-      <MahasiswaPagination
+      <Pagination
         currentPage={mahasiswaData?.meta?.current_page ?? 1}
         totalPages={mahasiswaData?.meta?.last_page ?? 1}
       />

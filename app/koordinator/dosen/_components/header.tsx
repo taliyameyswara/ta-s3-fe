@@ -3,12 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { PlusCircleIcon } from "lucide-react";
 import { useState } from "react";
-import { AddEditMahasiswaModal } from "./add-edit-modal";
-import { SearchInput } from "@/components/search-input";
 import { LimitSelector } from "@/components/limit-selector";
+import { SearchInput } from "@/components/search-input";
 import ImportDataButton from "@/components/import";
+import { AddEditDosenModal } from "./add-edit-modal";
 
-export default function HeaderMahasiswa() {
+export default function HeaderDosen() {
   const [addModalOpen, setAddModalOpen] = useState(false);
 
   const handleAddClick = () => {
@@ -20,17 +20,17 @@ export default function HeaderMahasiswa() {
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2">
           <Button onClick={handleAddClick}>
-            <PlusCircleIcon className="size-4" /> Tambah Mahasiswa
+            <PlusCircleIcon className="size-4" /> Tambah Dosen
           </Button>
-          <ImportDataButton isMahasiswa={true} />
+          <ImportDataButton isMahasiswa={false} />
         </div>
         <div className="flex gap-2">
-          <SearchInput placeholder="Cari mahasiswa..." />
+          <SearchInput placeholder="Cari dosen..." />
           <LimitSelector defaultValue={10} />
         </div>
       </div>
 
-      <AddEditMahasiswaModal
+      <AddEditDosenModal
         isOpen={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         isEdit={false}
