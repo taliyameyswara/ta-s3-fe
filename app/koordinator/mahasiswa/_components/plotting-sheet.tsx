@@ -32,7 +32,7 @@ import {
   getDosen,
   getPlottingByMahasiswaId,
   plottingAction,
-} from "@/lib/api/koordinator/mahasiswa";
+} from "@/lib/api/mahasiswa";
 import { Dosen } from "@/type/dosen";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addMahasiswa, updateMahasiswa } from "@/lib/api/koordinator/mahasiswa";
+import { addMahasiswa, updateMahasiswa } from "@/lib/api/mahasiswa";
 import { toast } from "sonner";
 import { Mahasiswa } from "@/type/mahasiswa";
 import PasswordInput from "./password-input";

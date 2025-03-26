@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteMahasiswa } from "@/lib/api/koordinator/mahasiswa";
+import { deleteMahasiswa } from "@/lib/api/mahasiswa";
 import { toast } from "sonner";
 
 interface DeleteMahasiswaDialogProps {

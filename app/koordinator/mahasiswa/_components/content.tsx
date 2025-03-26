@@ -1,6 +1,6 @@
 import { MahasiswaTable } from "./table";
 import { MahasiswaPagination } from "./pagination";
-import getListMahasiswa from "@/lib/api/koordinator/mahasiswa";
+import getListMahasiswa from "@/lib/api/mahasiswa";
 
 export async function MahasiswaContent({
   page,

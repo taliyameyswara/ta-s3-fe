@@ -39,11 +39,7 @@ export async function getMahasiswaById(id: string) {
     throw new Error(response.message);
   }
 
-  return {
-    success: response.success,
-    data: response.data,
-    message: response.message,
-  };
+  return response;
 }
 
 export async function addMahasiswa(data: Mahasiswa) {
@@ -54,11 +50,7 @@ export async function addMahasiswa(data: Mahasiswa) {
     throw new Error(response.message);
   }
 
-  return {
-    success: response.success,
-    data: response.data,
-    message: response.message,
-  };
+  return response;
 }
 
 export async function updateMahasiswa(id: string, data: Mahasiswa) {
@@ -69,11 +61,7 @@ export async function updateMahasiswa(id: string, data: Mahasiswa) {
     throw new Error(response.message);
   }
 
-  return {
-    success: response.success,
-    data: response.data,
-    message: response.message,
-  };
+  return response;
 }
 
 export async function deleteMahasiswa(id: string) {
@@ -84,11 +72,7 @@ export async function deleteMahasiswa(id: string) {
     throw new Error(response.message);
   }
 
-  return {
-    success: response.success,
-    data: response.data,
-    message: response.message,
-  };
+  return response;
 }
 
 export async function getExcelTemplate(): Promise<Blob> {
@@ -108,11 +92,7 @@ export async function importExcelData(data: FormData) {
     throw new Error(response.message);
   }
 
-  return {
-    success: response.success,
-    data: response.data,
-    message: response.message,
-  };
+  return response;
 }
 
 export async function getDosen() {
