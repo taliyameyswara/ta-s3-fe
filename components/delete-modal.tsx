@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useSWRConfig } from "swr";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,8 +13,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { deleteMahasiswa } from "@/lib/api/mahasiswa";
-import { toast } from "sonner";
 import { deleteDosen } from "@/lib/api/dosen";
+import { toast } from "sonner";
 
 interface DeleteDialogProps {
   isOpen: boolean;
@@ -30,22 +31,62 @@ export function DeleteDialog({
   entityName,
   isMahasiswa,
 }: DeleteDialogProps) {
-  const router = useRouter();
-
+  const { mutate } = useSWRConfig();
   const entityType = isMahasiswa ? "Mahasiswa" : "Dosen";
   const deleteFunction = isMahasiswa ? deleteMahasiswa : deleteDosen;
+  const cachePrefix = isMahasiswa ? "/mahasiswa?" : "/dosen?";
 
   const handleDelete = () => {
-    const deletePromise = deleteFunction(entityId.toString()).then(() => {
-      router.refresh();
-      onClose();
+    // Optimistic update: remove item from cache
+    mutate(
+      (key: any) => typeof key === "object" && key[0].startsWith(cachePrefix),
+      (currentData: any) => {
+        if (!currentData?.success) return currentData;
+        const newData = { ...currentData };
+        newData.data = newData.data.filter(
+          (item: any) => item.id !== entityId.toString()
+        );
+        return newData;
+      },
+      { revalidate: false }
+    );
+
+    // Create promise for toast
+    const deletePromise = new Promise<void>((resolve, reject) => {
+      deleteFunction(entityId.toString())
+        .then((response) => {
+          if (!response.success) {
+            throw new Error(
+              response.message || `Failed to delete ${entityType.toLowerCase()}`
+            );
+          }
+          // Trigger full refetch to sync with server
+          mutate(
+            (key: any) =>
+              typeof key === "object" && key[0]?.startsWith(cachePrefix)
+          );
+          resolve();
+        })
+        .catch((error) => {
+          // Revert optimistic update on error
+          mutate(
+            (key: any) =>
+              typeof key === "object" && key[0].startsWith(cachePrefix)
+          );
+          reject(error);
+        });
     });
 
+    // Show toast with loading, success, and error states
     toast.promise(deletePromise, {
       loading: `Menghapus data ${entityType.toLowerCase()}...`,
       success: `Data ${entityType.toLowerCase()} berhasil dihapus`,
-      error: `Gagal menghapus data ${entityType.toLowerCase()}`,
+      error: (error) =>
+        `Gagal menghapus data ${entityType.toLowerCase()}: ${error.message}`,
     });
+
+    // Close dialog after initiating deletion
+    onClose();
   };
 
   return (
