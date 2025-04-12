@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Dosen } from "@/type/dosen";
 import { z } from "zod";
 import PasswordInput from "../../mahasiswa/_components/password-input";
+import { mutate } from "swr";
 
 const dosenSchema = z.object({
   npp: z.string().min(1, "NPP wajib diisi"),
@@ -74,7 +75,6 @@ export function AddEditDosenModal({
   dosen,
   isEdit = false,
 }: AddEditDosenModalProps) {
-  const router = useRouter();
   const [formData, setFormData] = useState<DosenForm>(defaultDosen);
   const [errors, setErrors] = useState<
     Partial<Record<keyof DosenForm, string>>
@@ -153,7 +153,10 @@ export function AddEditDosenModal({
       }
 
       toast.success(response.message);
-      router.refresh();
+      mutate(
+        (key: any) =>
+          key && typeof key === "object" && key[0]?.startsWith("/dosen?")
+      );
       onClose();
     } catch (error) {
       console.log("Error saving dosen:", error);

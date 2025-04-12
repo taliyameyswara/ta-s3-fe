@@ -1,29 +1,18 @@
-import { Suspense } from "react";
 import { MahasiswaContent } from "./_components/content";
-import Loading from "./loading";
 
 export default async function MahasiswaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: number; search?: string; limit?: number }>;
+  searchParams: Promise<{ page?: string; search?: string; limit?: string }>;
 }) {
   const { page = "1", search = "", limit = "10" } = await searchParams;
   const pageNum = Number(page) || 1;
   const searchQuery = search || undefined;
   const limitNum = Number(limit) || 10;
-  const suspenseKey = `page=${pageNum}${
-    searchQuery ? `&search=${searchQuery}` : ""
-  }&limit=${limitNum}`;
 
   return (
     <div>
-      <Suspense key={suspenseKey} fallback={<Loading />}>
-        <MahasiswaContent
-          page={pageNum}
-          search={searchQuery}
-          limit={limitNum}
-        />
-      </Suspense>
+      <MahasiswaContent page={pageNum} search={searchQuery} limit={limitNum} />
     </div>
   );
 }

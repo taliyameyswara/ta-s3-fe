@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Mahasiswa } from "@/type/mahasiswa";
 import PasswordInput from "./password-input";
 import { z } from "zod";
+import { useSWRConfig } from "swr";
 
 // schema validation
 const mahasiswaSchema = z.object({
@@ -67,7 +68,8 @@ export function AddEditMahasiswaModal({
   mahasiswa,
   isEdit = false,
 }: AddEditMahasiswaModalProps) {
-  const router = useRouter();
+  // const router = useRouter();
+  const { mutate } = useSWRConfig();
   const [formData, setFormData] = useState<MahasiswaForm>(defaultMahasiswa);
   const [errors, setErrors] = useState<
     Partial<Record<keyof MahasiswaForm, string>>
@@ -143,8 +145,13 @@ export function AddEditMahasiswaModal({
         response = await addMahasiswa(formData);
       }
 
+      // router.refresh();
+      mutate(
+        (key: any) =>
+          key && typeof key === "object" && key[0]?.startsWith("/mahasiswa?")
+      );
+
       toast.success(response.message);
-      router.refresh();
       onClose();
     } catch (error) {
       console.log("Error saving mahasiswa:", error);
