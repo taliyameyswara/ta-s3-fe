@@ -46,22 +46,29 @@ export function LoginForm() {
         redirect: false,
       });
 
-      toast.success("Login berhasil!", {
-        duration: 3000,
-      });
+      if (result?.error) {
+        const errorMessage =
+          result.error === "CredentialsSignin"
+            ? "Email atau password salah"
+            : "Terjadi kesalahan ketika login";
+        toast.error("Login gagal!", {
+          description: errorMessage,
+        });
+        return;
+      }
 
+      toast.success("Login berhasil!");
       router.push(result?.url || "/");
-      router.refresh();
     } catch (error) {
       toast.error("Login gagal!", {
-        description: "Terjadi kesalahan ketika login",
-        duration: 3000,
+        description: "Terjadi kesalahan tidak terduga",
       });
-      console.error("Login failed:", error);
+      console.error("Unexpected login error:", error);
     } finally {
       setIsLoading(false);
     }
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
