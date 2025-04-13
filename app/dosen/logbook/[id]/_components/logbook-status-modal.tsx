@@ -60,7 +60,6 @@ export function LogbookStatusModal({
         window.location.reload();
       }
     } catch (error) {
-      console.error("Error updating logbook status:", error);
       toast.error(
         error instanceof Error
           ? error.message

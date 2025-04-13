@@ -63,10 +63,11 @@ export default function AddLogbookDialog({
       setOpen(false);
       form.reset();
     } catch (error) {
-      console.error(error);
-      toast.error(`Terjadi kesalahan saat membuat logbook ${type}`, {
-        description: "Gagal",
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat memperbarui status logbook"
+      );
     } finally {
       setIsSubmitting(false);
     }

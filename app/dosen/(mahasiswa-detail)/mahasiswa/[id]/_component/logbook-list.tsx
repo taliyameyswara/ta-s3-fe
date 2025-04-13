@@ -1,7 +1,7 @@
 "use client";
 
 import { useLogbookMahasiswa } from "@/lib/api/logbook/client";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getStatusColor } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -98,19 +98,4 @@ export default function LogbookList({
       ))}
     </div>
   );
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "pending":
-      return "secondary";
-    case "diterima":
-      return "success";
-    case "ditolak":
-      return "destructiveOutline";
-    case "direvisi":
-      return "primary";
-    default:
-      return "default";
-  }
 }

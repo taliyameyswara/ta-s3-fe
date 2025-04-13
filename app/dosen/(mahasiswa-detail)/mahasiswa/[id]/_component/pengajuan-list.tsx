@@ -150,7 +150,7 @@ export default function PengajuanList({
       <div className="px-2">
         <h1 className="text-xl font-medium mb-4">Data Pengajuan Penelitian</h1>
         <Card className="shadow-none border">
-          <div className="text-gray-500 py-8 text-center">
+          <div className="text-gray-500 text-center">
             Belum ada pengajuan {type}
           </div>
         </Card>
@@ -170,19 +170,6 @@ export default function PengajuanList({
   } else if (type !== "jurnal" && !Array.isArray(pengajuan)) {
     // For prociding and disertasi, treat as single item
     pengajuanItems = [pengajuan];
-  }
-
-  if (pengajuanItems.length === 0) {
-    return (
-      <div className="px-2">
-        <h1 className="text-xl font-medium mb-4">Data Pengajuan Penelitian</h1>
-        <Card className="shadow-none border">
-          <div className="text-gray-500 py-8 text-center">
-            Belum ada pengajuan {type}
-          </div>
-        </Card>
-      </div>
-    );
   }
 
   return (

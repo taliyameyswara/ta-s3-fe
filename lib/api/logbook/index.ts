@@ -150,6 +150,21 @@ export async function createLogbook(type: string, data: LogbookData) {
   }
 }
 
+export async function revisiLogbook(type: string, data: LogbookData) {
+  try {
+    const response = await post(`/logbook/revision`, data);
+
+    if (!response.success) {
+      throw new Error(response.message);
+    }
+
+    return response;
+  } catch (error) {
+    console.error(`Error creating ${type} logbook:`, error);
+    throw error;
+  }
+}
+
 export async function getLogbookDetail(id: number) {
   try {
     const response = await get(`/logbook/${id}`);
@@ -161,6 +176,21 @@ export async function getLogbookDetail(id: number) {
     return response;
   } catch (error) {
     console.error(`Error fetching logbook detail with ID ${id}:`, error);
+    throw error;
+  }
+}
+
+export async function getAccessAction(id: number) {
+  try {
+    const response = await get(`/logbook/check-access/${id}`);
+
+    if (!response.success) {
+      throw new Error(response.message);
+    }
+
+    return response;
+  } catch (error) {
+    console.error(`Error fetching logbook access with ID ${id}:`, error);
     throw error;
   }
 }
@@ -182,3 +212,4 @@ export async function updateLogbookStatus(
     throw error;
   }
 }
+

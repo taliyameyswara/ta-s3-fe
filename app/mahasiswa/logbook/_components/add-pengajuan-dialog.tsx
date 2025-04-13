@@ -302,11 +302,7 @@ export default function PengajuanDialog({
               >
                 Batal
               </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-primary-700 text-white hover:bg-primary-600"
-              >
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Menyimpan..." : "Simpan"}
               </Button>
             </DialogFooter>

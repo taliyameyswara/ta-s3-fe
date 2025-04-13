@@ -120,7 +120,7 @@ export async function plottingAction(data: PlottingData) {
     const response = await post("/plotting", data);
     return response;
   } catch (error) {
-    console.error("Error fetching plotting data:", error);
+    console.log("Error fetching plotting data:", error);
     throw error;
   }
 }
@@ -130,7 +130,7 @@ export async function getPlottingDetail() {
     const response = await get("/plotting/detail");
     return response;
   } catch (error) {
-    console.error("Error fetching plotting data:", error);
+    console.log("Error fetching plotting data:", error);
     throw error;
   }
 }

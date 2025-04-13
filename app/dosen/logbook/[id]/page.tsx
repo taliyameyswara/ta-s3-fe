@@ -3,9 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getLogbookDetail } from "@/lib/api/logbook";
+import { getLogbookDetail, getAccessAction } from "@/lib/api/logbook";
 import DashboardHeader from "@/components/dashboard-header";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getStatusColor } from "@/lib/utils";
 import { LogbookStatusModal } from "./_components/logbook-status-modal";
 
 interface DosenStatus {
@@ -21,6 +21,16 @@ interface DosenStatus {
   updated_at: string;
 }
 
+interface Revision {
+  id: number;
+  deskripsi: string;
+  dokumen: string | null;
+  bab: string | null;
+  created_at: string;
+  updated_at: string;
+  statuses: DosenStatus[];
+}
+
 interface LogbookDetail {
   id: number;
   judul: string;
@@ -31,38 +41,34 @@ interface LogbookDetail {
   updated_at: string;
   statuses: DosenStatus[];
   mahasiswa_id?: number;
+  revisions?: Revision[];
 }
 
 export default async function LogbookDetailPage({
   params,
 }: {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: string }>;
 }) {
   let logbookData: LogbookDetail;
+  let canTakeAction;
   const { id } = await params;
+  const logbookId = parseInt(id, 10);
 
   try {
-    const response = await getLogbookDetail(id);
+    const response = await getLogbookDetail(logbookId);
     logbookData = response.data;
+
+    // Check if the dosen has access to take action
+    if (logbookData.status.toLowerCase() === "direvisi") {
+      const accessResponse = await getAccessAction(logbookId);
+      canTakeAction = accessResponse.success && accessResponse.data === true;
+    }
+
+    console.log(canTakeAction);
   } catch (error) {
-    console.error(`Failed to fetch logbook ID ${id}:`, error);
+    console.error(`Failed to fetch logbook ID ${logbookId}:`, error);
     notFound();
   }
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return "secondary";
-      case "diterima":
-        return "success";
-      case "ditolak":
-        return "destructiveOutline";
-      case "direvisi":
-        return "default";
-      default:
-        return "outline";
-    }
-  };
 
   const formatTipeDosen = (tipe: string) => {
     switch (tipe.toLowerCase()) {
@@ -77,9 +83,6 @@ export default async function LogbookDetailPage({
     }
   };
 
-  
-  const canTakeAction = logbookData.status.toLowerCase() === "pending";
-
   return (
     <div className="">
       <DashboardHeader
@@ -88,17 +91,17 @@ export default async function LogbookDetailPage({
           { name: "Mahasiswa Bimbingan", url: "/dosen/mahasiswa" },
           {
             name: "Data Dokumen dan Logbook",
-            url: `dosen/mahasiswa/${logbookData.mahasiswa_id}`,
+            url: `dosen/mahasiswa/${logbookData.mahasiswa_id || ""}`,
           },
           {
             name: "Detail Logbook Bimbingan",
-            url: `dosen/logbook/${id}`,
+            url: `dosen/logbook/${logbookId}`,
           },
         ]}
       />
-      <div className="max-w-3xl ">
+      <div className="max-w-3xl">
         <Button variant="outline" asChild>
-          <Link href={`/dosen/mahasiswa/${logbookData.mahasiswa_id}`}>
+          <Link href={`/dosen/mahasiswa/${logbookData.mahasiswa_id || ""}`}>
             <ArrowLeft />
             Kembali ke List Logbook
           </Link>
@@ -121,9 +124,13 @@ export default async function LogbookDetailPage({
               </p>
             </div>
 
-            <div className="flex justify-between items-center ">
+            <div className="flex justify-between items-center">
               {logbookData.dokumen ? (
-                <Button className="flex items-center gap-2" asChild>
+                <Button
+                  className="flex items-center gap-2"
+                  variant={"outline"}
+                  asChild
+                >
                   <a
                     href={logbookData.dokumen}
                     target="_blank"
@@ -160,7 +167,7 @@ export default async function LogbookDetailPage({
           </div>
 
           <div className="border-t pt-4">
-            <h3 className="font-medium text-lg  mb-4">Verifikasi Dosen</h3>
+            <h3 className="font-medium text-lg mb-4">Verifikasi Dosen</h3>
             {logbookData.statuses.length > 0 ? (
               <div className="space-y-4">
                 {logbookData.statuses.map((item) => (
@@ -199,6 +206,113 @@ export default async function LogbookDetailPage({
               <p className="text-gray-500">Belum ada verifikasi dosen.</p>
             )}
           </div>
+
+          {logbookData.revisions && logbookData.revisions.length > 0 && (
+            <div className="border-t pt-4">
+              <h3 className="font-medium text-lg mb-4">Revisi Logbook</h3>
+              <div className="space-y-6">
+                {logbookData.revisions.map((revision, index) => (
+                  <div key={revision.id} className="space-y-2">
+                    <div>
+                      <h4 className="font-medium">Revisi #{index + 1}</h4>
+                      <p className="text-muted-foreground">
+                        {revision.deskripsi || "Tidak ada deskripsi revisi"}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      {revision.dokumen ? (
+                        <Button
+                          variant="outline"
+                          className="flex items-center gap-2"
+                          asChild
+                        >
+                          <a
+                            href={revision.dokumen}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Dokumen Revisi <ExternalLink size={16} />
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button variant="outline" disabled>
+                          Tidak ada dokumen revisi
+                        </Button>
+                      )}
+                      {revision.bab && (
+                        <Badge variant="secondary">Bab: {revision.bab}</Badge>
+                      )}
+                    </div>
+
+                    <div className="text-sm text-gray-500 flex gap-4">
+                      <span>
+                        Dibuat pada: {formatDate(revision.created_at)}
+                      </span>
+                      {revision.created_at !== revision.updated_at && (
+                        <span>
+                          Diperbarui pada: {formatDate(revision.updated_at)}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mt-2">
+                      <h5 className="text-sm font-medium mb-2">
+                        Verifikasi Dosen untuk Revisi
+                      </h5>
+                      {revision.statuses.length > 0 ? (
+                        <div className="space-y-4">
+                          {revision.statuses.map((status) => (
+                            <div
+                              key={status.id}
+                              className="flex items-start gap-3"
+                            >
+                              <div className="w-2 h-2 rounded-full bg-primary mt-2" />
+                              <div className="flex-1">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <p className="font-medium">
+                                      {status.dosen.name}
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                      {formatTipeDosen(status.tipe)} (
+                                      {status.dosen.email})
+                                    </p>
+                                  </div>
+                                  <Badge
+                                    variant={`${getStatusColor(status.status)}`}
+                                    className="capitalize"
+                                  >
+                                    {status.status === "pending"
+                                      ? "Pending"
+                                      : `${status.status}, ${formatDate(
+                                          status.updated_at
+                                        )}`}
+                                  </Badge>
+                                </div>
+                                {status.catatan && (
+                                  <div className="mt-2 p-3 bg-gray-50 rounded-md text-sm">
+                                    <p className="text-xs text-muted-foreground">
+                                      Catatan
+                                    </p>
+                                    {status.catatan}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500">
+                          Belum ada verifikasi dosen untuk revisi ini.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

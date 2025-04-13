@@ -15,3 +15,18 @@ export const formatDate = (dateString: string) => {
     return dateString;
   }
 };
+
+export const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "pending":
+      return "secondary";
+    case "diterima":
+      return "success";
+    case "ditolak":
+      return "destructiveOutline";
+    case "direvisi":
+      return "primary";
+    default:
+      return "outline";
+  }
+};
