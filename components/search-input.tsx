@@ -25,7 +25,7 @@ export function SearchInput({ placeholder }: SearchInputProps) {
     }
 
     replace(`${pathname}?${params.toString()}`);
-  }, 500); // Debounce 500ms
+  }, 500);
 
   return (
     <div>

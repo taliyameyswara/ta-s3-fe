@@ -124,3 +124,13 @@ export async function plottingAction(data: PlottingData) {
     throw error;
   }
 }
+
+export async function getPlottingDetail() {
+  try {
+    const response = await get("/plotting/detail");
+    return response;
+  } catch (error) {
+    console.error("Error fetching plotting data:", error);
+    throw error;
+  }
+}

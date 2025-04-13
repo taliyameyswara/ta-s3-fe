@@ -108,7 +108,6 @@ export default function ImportDataButton({
             variant="outline"
             onClick={handleDownloadTemplate}
             className="w-fit"
-            size="sm"
             disabled={isDownloading}
           >
             <Download className="size-4 mr-2" />

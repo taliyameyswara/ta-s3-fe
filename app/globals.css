@@ -30,8 +30,8 @@
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-secondary: var(--color-secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
   --color-popover-foreground: var(--popover-foreground);
@@ -55,6 +55,19 @@
   --color-primary-800: #10447c;
   --color-primary-900: #133a67;
   --color-primary-950: #0d2544;
+
+  --color-secondary: #f4bd45;
+  --color-secondary-50: #fefaec;
+  --color-secondary-100: #fceec9;
+  --color-secondary-200: #f8db8f;
+  --color-secondary-300: #f4bd45; /* DEFAULT */
+  --color-secondary-400: #f2ab2d;
+  --color-secondary-500: #eb8b15;
+  --color-secondary-600: #d0670f;
+  --color-secondary-700: #ad4710;
+  --color-secondary-800: #8d3713;
+  --color-secondary-900: #742e13;
+  --color-secondary-950: #421606;
 }
 
 :root {
@@ -67,8 +80,8 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --color-secondary: oklch(0.97 0 0);
+  --color-secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -101,8 +114,8 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --color-secondary: oklch(0.269 0 0);
+  --color-secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
