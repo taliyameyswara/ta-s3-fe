@@ -1,6 +1,8 @@
 "use client";
 
-import { ChevronsUpDown, User } from "lucide-react";
+import { ChevronsUpDown, LogOut, User } from "lucide-react";
+import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,11 +21,27 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
-import LogoutButton from "./logout-btn";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { data: session } = useSession();
+
+  const handleLogout = async () => {
+    try {
+      signOut({ callbackUrl: "/login" });
+      toast.success("Logout berhasil!", {
+        duration: 3000,
+      });
+    } catch (error) {
+      toast.error("Logout gagal!", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Terjadi kesalahan saat logout.",
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -88,8 +106,9 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogoutButton />
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="text-red-600 hover:text-red-500" />
+              <span className="text-red-600 hover:text-red-500">Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

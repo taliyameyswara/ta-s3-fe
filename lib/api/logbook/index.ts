@@ -150,7 +150,7 @@ export async function createLogbook(type: string, data: LogbookData) {
   }
 }
 
-export async function getLogbookDetail(id: string) {
+export async function getLogbookDetail(id: number) {
   try {
     const response = await get(`/logbook/${id}`);
 

@@ -50,7 +50,7 @@ const editDosenSchema = dosenSchema.extend({
   telepon: z.string().optional(),
 });
 
-type DosenForm = z.infer<typeof dosenSchema>;
+export type DosenForm = z.infer<typeof dosenSchema>;
 
 interface AddEditDosenModalProps {
   isOpen: boolean;
@@ -107,7 +107,9 @@ export function AddEditDosenModal({
     }));
 
     const schema = isEdit ? editDosenSchema : dosenSchema;
-    const fieldSchema = schema.pick({ [name]: true });
+    const fieldSchema = z.object({
+      [name]: schema.shape[name as keyof typeof schema.shape],
+    });
     const result = fieldSchema.safeParse({ [name]: value });
     if (!result.success) {
       const errorMessage = result.error.errors[0].message;
@@ -147,7 +149,7 @@ export function AddEditDosenModal({
     try {
       let response;
       if (isEdit && dosen?.id) {
-        response = await updateDosen(dosen.id.toString(), formData);
+        response = await updateDosen(dosen.id, formData);
       } else {
         response = await addDosen(formData);
       }

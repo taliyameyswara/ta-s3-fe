@@ -100,7 +100,7 @@ export function AddEditMahasiswaModal({
     }));
 
     const schema = isEdit ? editMahasiswaSchema : mahasiswaSchema;
-    const fieldSchema = schema.pick({ [name]: true });
+    const fieldSchema = z.object({ [name]: schema.shape[name as keyof typeof schema.shape] });
     const result = fieldSchema.safeParse({ [name]: value });
     if (!result.success) {
       const errorMessage = result.error.errors[0].message;

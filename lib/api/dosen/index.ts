@@ -1,7 +1,7 @@
 "use server";
 
-import { Dosen } from "@/type/dosen";
 import { del, get, post, put } from "../base";
+import { DosenForm } from "@/app/koordinator/dosen/_components/add-edit-modal";
 
 export default async function getListDosen(
   page = 1,
@@ -41,7 +41,7 @@ export async function getDosenById(id: number) {
   return response;
 }
 
-export async function addDosen(data: Dosen) {
+export async function addDosen(data: DosenForm) {
   const response = await post(`/dosen`, data);
 
   if (!response.success) {
@@ -52,7 +52,7 @@ export async function addDosen(data: Dosen) {
   return response;
 }
 
-export async function updateDosen(id: string, data: Dosen) {
+export async function updateDosen(id: number, data: DosenForm) {
   const response = await put(`/dosen/${id}`, data);
 
   if (!response.success) {

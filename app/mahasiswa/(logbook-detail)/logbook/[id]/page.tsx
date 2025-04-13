@@ -2,15 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
 import Link from "next/link";
 import { getLogbookDetail } from "@/lib/api/logbook";
 import DashboardHeader from "@/components/dashboard-header";
-
-interface LogbookDetailPageProps {
-  params: { id: string };
-}
+import { formatDate } from "@/lib/utils";
 
 interface DosenStatus {
   id: number;
@@ -37,14 +32,17 @@ interface LogbookDetail {
 
 export default async function LogbookDetailPage({
   params,
-}: LogbookDetailPageProps) {
+}: {
+  params: Promise<{ id: number }>;
+}) {
   let logbookData: LogbookDetail;
+  const { id } = await params;
 
   try {
-    const response = await getLogbookDetail(params.id);
+    const response = await getLogbookDetail(id);
     logbookData = response.data;
   } catch (error) {
-    console.error(`Failed to fetch logbook ID ${params.id}:`, error);
+    console.error(`Failed to fetch logbook ID ${id}:`, error);
     notFound();
   }
 
@@ -73,14 +71,6 @@ export default async function LogbookDetailPage({
         return "Co-Promotor 2";
       default:
         return tipe.charAt(0).toUpperCase() + tipe.slice(1);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), "d MMMM yyyy", { locale: id });
-    } catch {
-      return dateString;
     }
   };
 

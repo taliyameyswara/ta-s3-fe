@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { PlusCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { AddEditMahasiswaModal } from "./add-edit-modal";
 import { SearchInput } from "@/components/search-input";
 import { LimitSelector } from "@/components/limit-selector";
@@ -25,8 +25,10 @@ export default function HeaderMahasiswa() {
           <ImportDataButton isMahasiswa={true} />
         </div>
         <div className="flex gap-2">
-          <SearchInput placeholder="Cari mahasiswa..." />
-          <LimitSelector defaultValue={10} />
+          <Suspense>
+            <SearchInput placeholder="Cari mahasiswa..." />
+            <LimitSelector defaultValue={10} />
+          </Suspense>
         </div>
       </div>
 

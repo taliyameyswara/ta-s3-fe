@@ -5,6 +5,7 @@ import DosenCard from "./dosen-card";
 import { Pagination } from "@/components/pagination";
 import { Dosen } from "@/type/dosen";
 import Loading from "../loading";
+import { Suspense } from "react";
 
 type DosenContentProps = {
   page: number;
@@ -37,7 +38,12 @@ export function DosenContent({ page, search, limit }: DosenContentProps) {
   return (
     <>
       <DosenCard data={dosenData as Dosen[]} />
-      <Pagination currentPage={meta.current_page} totalPages={meta.last_page} />
+      <Suspense>
+        <Pagination
+          currentPage={meta.current_page}
+          totalPages={meta.last_page}
+        />
+      </Suspense>
     </>
   );
 }

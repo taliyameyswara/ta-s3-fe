@@ -46,6 +46,7 @@ export function NavMain({
     <SidebarGroup className="-mt-5">
       <SidebarMenu>
         {items.map((item, index) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const isSectionActive = item.items?.some(
             (subItem) =>
               pathname === subItem.url ||

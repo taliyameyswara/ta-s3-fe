@@ -96,8 +96,13 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Logging in..." : "Login"}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          isLoading={isLoading}
+          className="w-full"
+        >
+          Login
         </Button>
       </form>
     </Form>

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { PlusCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { LimitSelector } from "@/components/limit-selector";
 import { SearchInput } from "@/components/search-input";
 import ImportDataButton from "@/components/import";
@@ -25,8 +25,10 @@ export default function HeaderDosen() {
           <ImportDataButton isMahasiswa={false} />
         </div>
         <div className="flex gap-2">
-          <SearchInput placeholder="Cari dosen..." />
-          <LimitSelector defaultValue={10} />
+          <Suspense>
+            <SearchInput placeholder="Cari dosen..." />
+            <LimitSelector defaultValue={10} />
+          </Suspense>
         </div>
       </div>
 

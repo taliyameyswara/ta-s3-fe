@@ -6,6 +6,7 @@ import { Pagination } from "@/components/pagination";
 import { Mahasiswa } from "@/type/mahasiswa";
 import Loading from "../loading";
 import { useListMahasiswa } from "@/lib/api/mahasiswa/client";
+import { Suspense } from "react";
 
 type MahasiswaContentProps = {
   page: number;
@@ -42,7 +43,12 @@ export function MahasiswaContent({
   return (
     <>
       <MahasiswaTable data={mahasiswaData as Mahasiswa[]} />
-      <Pagination currentPage={meta.current_page} totalPages={meta.last_page} />
+      <Suspense>
+        <Pagination
+          currentPage={meta.current_page}
+          totalPages={meta.last_page}
+        />
+      </Suspense>
     </>
   );
 }

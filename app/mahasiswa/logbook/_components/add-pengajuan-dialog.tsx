@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -55,10 +57,9 @@ interface PengajuanItem {
 
 interface PengajuanDialogProps {
   type: "prociding" | "jurnal" | "disertasi";
-  pengajuan?: PengajuanItem; // Undefined untuk mode tambah
+  pengajuan?: PengajuanItem;
 }
 
-// Schema validasi
 const baseSchema = z.object({
   judul: z.string().min(5, "Judul minimal 5 karakter"),
   deskripsi: z.string().min(10, "Deskripsi minimal 10 karakter"),
@@ -74,6 +75,8 @@ const jurnalSchema = baseSchema.extend({
   }),
 });
 
+type FormValues = z.infer<typeof jurnalSchema>;
+
 export default function PengajuanDialog({
   type,
   pengajuan,
@@ -85,25 +88,27 @@ export default function PengajuanDialog({
 
   const schema = type === "jurnal" ? jurnalSchema : baseSchema;
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const form = useForm<FormValues | z.infer<typeof baseSchema>>({
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       judul: pengajuan?.judul || "",
       deskripsi: pengajuan?.deskripsi || "",
       link: pengajuan?.link || "",
       status:
         (pengajuan?.status as "draft" | "submitted" | "publish") || "draft",
-      ...(type === "jurnal" ? { tipe: pengajuan?.tipe || undefined } : {}),
+      tipe:
+        type === "jurnal"
+          ? (pengajuan?.tipe as "jurnal1" | "jurnal2") || "jurnal1"
+          : undefined,
     },
   });
 
-  async function onSubmit(values: z.infer<typeof schema>) {
+  async function onSubmit(values: FormValues | z.infer<typeof baseSchema>) {
     setIsSubmitting(true);
 
     try {
       let response;
       if (isEditMode) {
-        // Mode edit
         if (type === "jurnal") {
           response = await updateJurnal(pengajuan!.id, values);
         } else if (type === "disertasi") {
@@ -113,13 +118,11 @@ export default function PengajuanDialog({
         }
         toast.success(`Pengajuan ${type} berhasil diperbarui`);
       } else {
-        // Mode tambah
         if (type === "jurnal") {
           response = await createJurnal(values);
         } else if (type === "disertasi") {
           response = await createDisertasi(values);
         } else {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           response = await createProsiding(values);
         }
         toast.success(`Pengajuan ${type} berhasil dibuat`);
@@ -151,7 +154,11 @@ export default function PengajuanDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          className={isEditMode ? "gap-2" : "bg-blue-600 hover:bg-blue-700"}
+          className={
+            isEditMode
+              ? "gap-2 border-primary-700 text-primary-700 hover:bg-primary-100"
+              : "bg-primary-700 text-white hover:bg-primary-600"
+          }
           variant={isEditMode ? "outline" : "default"}
           size={isEditMode ? "sm" : "default"}
         >
@@ -181,7 +188,12 @@ export default function PengajuanDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit((values) =>
+              onSubmit(values as FormValues)
+            )}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="judul"
@@ -196,17 +208,17 @@ export default function PengajuanDialog({
               )}
             />
 
-            <div className="flex gap-2">
+            <div className="flex gap-4">
               {type === "jurnal" && (
                 <FormField
                   control={form.control}
                   name="tipe"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel>Tipe Jurnal</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -228,12 +240,9 @@ export default function PengajuanDialog({
                 control={form.control}
                 name="status"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex-1">
                     <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Pilih status pengajuan" />
@@ -284,7 +293,20 @@ export default function PengajuanDialog({
             />
 
             <DialogFooter>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={isSubmitting}
+                className="bg-gray-100 hover:bg-gray-200"
+              >
+                Batal
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-primary-700 text-white hover:bg-primary-600"
+              >
                 {isSubmitting ? "Menyimpan..." : "Simpan"}
               </Button>
             </DialogFooter>
