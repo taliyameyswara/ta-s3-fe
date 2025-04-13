@@ -5,25 +5,17 @@ import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import { API_URL } from "../constant";
 
-// Token Header Configuration
-type TokenType = "Bearer";
-
-const getAuthorizationHeader = (
-  tokenType: TokenType = "Bearer",
-  token?: string
-): string => {
-  return token ? `${tokenType} ${token}` : "";
+const getAuthorizationHeader = (token?: string): string => {
+  return token ? `${token}` : "";
 };
 
 // Configure Request Headers
 const configureHeaders = ({
   contentType = "application/json",
-  tokenType = "Bearer",
   token = undefined,
   isFileUpload = false,
 }: {
   contentType?: string;
-  tokenType?: TokenType;
   token?: string;
   isFileUpload?: boolean;
 } = {}) => {
@@ -36,7 +28,7 @@ const configureHeaders = ({
 
   headers.append("Accept", "application/json");
 
-  const authHeader = getAuthorizationHeader(tokenType, token);
+  const authHeader = getAuthorizationHeader(token);
   if (authHeader) {
     headers.append("Authorization", authHeader);
   }
@@ -68,7 +60,6 @@ export const useApiData = (
   options: {
     method?: string;
     contentType?: string;
-    tokenType?: TokenType;
     token?: string;
     isFileUpload?: boolean;
     body?: any;
@@ -80,7 +71,6 @@ export const useApiData = (
   const {
     method = "GET",
     contentType = "application/json",
-    tokenType = "Bearer",
     token: providedToken,
     isFileUpload = false,
     body,
@@ -91,7 +81,6 @@ export const useApiData = (
   const token = providedToken || session?.user?.token;
   const headers = configureHeaders({
     contentType,
-    tokenType,
     token,
     isFileUpload,
   });
@@ -138,7 +127,6 @@ export const createApiService = (baseUrl: string) => ({
     responseType: "json" | "blob" = "json",
     options: {
       contentType?: string;
-      tokenType?: TokenType;
       token?: string;
     } = {}
   ) => {
@@ -151,7 +139,6 @@ export const createApiService = (baseUrl: string) => ({
     isFileUpload = false,
     options: {
       contentType?: string;
-      tokenType?: TokenType;
       token?: string;
     } = {}
   ) =>
@@ -166,7 +153,6 @@ export const createApiService = (baseUrl: string) => ({
     data: any,
     options: {
       contentType?: string;
-      tokenType?: TokenType;
       token?: string;
     } = {}
   ) =>
@@ -179,7 +165,6 @@ export const createApiService = (baseUrl: string) => ({
     endpoint: string,
     options: {
       contentType?: string;
-      tokenType?: TokenType;
       token?: string;
     } = {}
   ) =>

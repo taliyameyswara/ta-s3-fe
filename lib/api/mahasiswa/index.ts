@@ -31,7 +31,7 @@ export default async function getListMahasiswa(
   }
 }
 
-export async function getMahasiswaById(id: string) {
+export async function getMahasiswaById(id: number) {
   const response = await get(`/mahasiswa/${id}`);
 
   if (!response.success) {

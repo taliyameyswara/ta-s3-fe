@@ -51,6 +51,7 @@ export function LoginForm() {
       });
 
       router.push(result?.url || "/");
+      router.refresh();
     } catch (error) {
       toast.error("Login gagal!", {
         description: "Terjadi kesalahan ketika login",

@@ -20,6 +20,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        success:
+          "bg-green-600 text-white shadow-xs hover:bg-green-700 focus-visible:ring-green-500/20 dark:focus-visible:ring-green-400/40 dark:bg-green-600",
         successOutline:
           "border-[0.5px] bg-green-100/50 text-green-600 hover:text-green-600 hover:bg-green-100/70 border-green-600",
         destructiveOutline:

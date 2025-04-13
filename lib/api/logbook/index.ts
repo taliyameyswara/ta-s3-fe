@@ -164,3 +164,21 @@ export async function getLogbookDetail(id: number) {
     throw error;
   }
 }
+
+export async function updateLogbookStatus(
+  id: number,
+  payload: { status: string; catatan: string | null }
+) {
+  try {
+    const response = await put(`/logbook/updatestatus/${id}`, payload);
+
+    if (!response.success) {
+      throw new Error(response.message);
+    }
+
+    return response;
+  } catch (error) {
+    console.error(`Error updating logbook detail with ID ${id}:`, error);
+    throw error;
+  }
+}

@@ -17,7 +17,7 @@ export default async function LayoutMahasiswa({
   return (
     <div>
       <DashboardHeader
-        breadcrumbItems={[{ name: "Dashboard", url: "/mahasiswa/dosen" }]}
+        breadcrumbItems={[{ name: "Dashboard", url: "/mahasiswa/logbook" }]}
         titleItems={[
           {
             title: `Data Dokumen dan Logbook ${
