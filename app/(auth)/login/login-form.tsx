@@ -59,6 +59,7 @@ export function LoginForm() {
 
       toast.success("Login berhasil!");
       router.push(result?.url || "/");
+      router.refresh();
     } catch (error) {
       toast.error("Login gagal!", {
         description: "Terjadi kesalahan tidak terduga",
