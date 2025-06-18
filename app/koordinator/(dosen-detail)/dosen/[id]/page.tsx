@@ -1,14 +1,30 @@
-import DosenDetail from "./content";
-import { getDosenById } from "@/lib/api/dosen";
-import DashboardHeader from "@/components/dashboard-header";
+"use client";
 
-export default async function DosenDetailPage({
+import Loading from "@/app/koordinator/dosen/loading";
+import DosenDetail from "./content";
+import DashboardHeader from "@/components/dashboard-header";
+import { useDetailDosen } from "@/lib/api/dosen/client";
+import { use } from "react";
+
+export default function DosenDetailPage({
   params,
 }: {
   params: Promise<{ id: number }>;
 }) {
-  const { id } = await params;
-  const dosen = await getDosenById(id);
+  const { id } = use(params);
+  const { data, error, isLoading } = useDetailDosen(id);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!data?.success || !data.data) {
+    return <div>Dosen tidak ditemukan</div>;
+  }
 
   return (
     <>
@@ -16,11 +32,11 @@ export default async function DosenDetailPage({
         breadcrumbItems={[
           { name: "Dashboard", url: "/koordinator" },
           { name: "Dosen Pembimbing", url: "/koordinator/dosen" },
-          { name: dosen.data.name, url: `koordinator/dosen/${dosen.data.id}` },
+          { name: data.data.name, url: `koordinator/dosen/${data.data.id}` },
         ]}
       />
       <div className="flex flex-col justify-center">
-        <DosenDetail dosen={dosen.data} />
+        <DosenDetail dosen={data.data} />
       </div>
     </>
   );

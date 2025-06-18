@@ -20,6 +20,8 @@ const buttonVariants = cva(
           "bg-secondary-400 shadow-xs hover:bg-secondary/80 text-white",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        primaryOutline:
+          "border-[0.5px] bg-primary-100/50 text-primary hover:text-primary hover:bg-primary-100/70 border-primary-300",
         success:
           "bg-green-600 text-white shadow-xs hover:bg-green-700 focus-visible:ring-green-500/20 dark:focus-visible:ring-green-400/40 dark:bg-green-600",
         successOutline:

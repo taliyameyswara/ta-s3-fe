@@ -54,7 +54,7 @@ export default function DosenDetail({ dosen }: DosenDetailProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" asChild>
-            <Link href="/dosen">
+            <Link href="/koordinator/dosen">
               <ArrowLeft className="size-4" />
               <span className="sr-only">Kembali</span>
             </Link>

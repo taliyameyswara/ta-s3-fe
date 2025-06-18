@@ -19,15 +19,7 @@ export function MahasiswaContent({
   search,
   limit,
 }: MahasiswaContentProps) {
-  const { data, error, isLoading, isAuthenticated } = useListMahasiswa(
-    page,
-    search,
-    limit
-  );
-
-  if (!isAuthenticated) {
-    return <div>Please log in to view mahasiswa data.</div>;
-  }
+  const { data, error, isLoading } = useListMahasiswa(page, search, limit);
 
   if (isLoading) {
     return <Loading />;

@@ -12,8 +12,11 @@ export default function DosenCard({ data }: DosenCardProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {data.map((dosen) => (
-        <Card key={dosen.id} className="overflow-hidden shadow-none p-4.5">
-          <CardHeader className="flex flex-row  justify-between space-y-0 p-0">
+        <Card
+          key={dosen.id}
+          className="overflow-hidden shadow-none p-4.5 gap-3"
+        >
+          <CardHeader className="flex flex-row justify-between space-y-0 p-0">
             <div className="">
               <h3 className="font-medium text-lg">{dosen.name}</h3>
               <p className="text-muted-foreground">{dosen.npp}</p>

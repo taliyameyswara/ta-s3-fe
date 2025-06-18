@@ -33,7 +33,7 @@ export default function PasswordInput({
               value={formData.password ?? ""}
               onChange={handleChange}
               className="pr-10"
-              placeholder="Masukkan password mahasiswa"
+              placeholder="Update password"
             />
             <button
               type="button"

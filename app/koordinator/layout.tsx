@@ -57,7 +57,7 @@ export default function KoordinatorLayout({
           </>
         }
       />
-      <main className="hidden lg:flex flex-col w-full p-4 my-4 ml-4 mr-4 bg-white border lg:ml-0 rounded-xl">
+      <main className="lg:flex flex-col w-full p-4 my-4 ml-4 mr-4 bg-white border lg:ml-0 rounded-xl">
         <div>{children}</div>
       </main>
     </SidebarProvider>

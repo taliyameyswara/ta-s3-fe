@@ -28,14 +28,12 @@ import { Badge } from "@/components/ui/badge";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import {
-  getDosen,
-  getPlottingByMahasiswaId,
-  plottingAction,
-} from "@/lib/api/mahasiswa";
+import { plottingAction } from "@/lib/api/mahasiswa";
 import { Dosen } from "@/type/dosen";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useListDosen } from "@/lib/api/dosen/client";
+import { useGetPlotting } from "@/lib/api/mahasiswa/client";
 
 interface PlottingSheetProps {
   isOpen: boolean;
@@ -52,59 +50,63 @@ export function PlottingSheet({
 }: PlottingSheetProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [dosenList, setDosenList] = useState<Dosen[]>([]);
   const [promotorId, setPromotorId] = useState<string>("");
   const [coPromotor1Id, setCoPromotor1Id] = useState<string>("");
   const [coPromotor2Id, setCoPromotor2Id] = useState<string>("");
   const [openPromotor, setOpenPromotor] = useState(false);
   const [openCoPromotor1, setOpenCoPromotor1] = useState(false);
   const [openCoPromotor2, setOpenCoPromotor2] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const { data: dosenResult, isLoading: dosenLoading } = useListDosen(
+    isOpen ? 1 : 0,
+    "",
+    isOpen ? 100 : 0
+  );
+  const { data: plottingResult, isLoading: plottingLoading } = useGetPlotting(
+    isOpen ? mahasiswaId : 0
+  );
 
   useEffect(() => {
-    const loadData = async () => {
-      if (isOpen) {
-        setIsLoading(true);
-        try {
-          // Ambil daftar dosen
-          const dosenResult = await getDosen();
-          if (dosenResult.error) {
-            throw new Error(dosenResult.message || "Failed to load dosen data");
-          }
-          setDosenList(dosenResult.data || []);
+    if (
+      isOpen &&
+      plottingResult?.success &&
+      plottingResult.data &&
+      !isInitialized
+    ) {
+      const { promotor, co_promotor_1, co_promotor_2 } = plottingResult.data;
+      setPromotorId(promotor?.id?.toString() || "");
+      setCoPromotor1Id(co_promotor_1?.id?.toString() || "");
+      setCoPromotor2Id(co_promotor_2?.id?.toString() || "");
+      setIsInitialized(true);
+    } else if (
+      isOpen &&
+      !plottingResult?.success &&
+      !isInitialized &&
+      !plottingLoading
+    ) {
+      setPromotorId("");
+      setCoPromotor1Id("");
+      setCoPromotor2Id("");
+      setIsInitialized(true);
+    }
+  }, [isOpen, plottingResult, isInitialized, plottingLoading]);
 
-          const plottingResult = await getPlottingByMahasiswaId(
-            mahasiswaId.toString()
-          );
-          if (plottingResult.success && plottingResult.data) {
-            const { promotor, co_promotor_1, co_promotor_2 } =
-              plottingResult.data;
-            setPromotorId(promotor?.id?.toString() || "");
-            setCoPromotor1Id(co_promotor_1?.id?.toString() || "");
-            setCoPromotor2Id(co_promotor_2?.id?.toString() || "");
-            setIsEditMode(true);
-          } else {
-            setPromotorId("");
-            setCoPromotor1Id("");
-            setCoPromotor2Id("");
-            setIsEditMode(false);
-          }
-        } catch (error) {
-          //   console.error("Error loading data:", error);
-          toast.warning(
-            error instanceof Error ? error.message : "Failed to load data"
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
+  // Reset initialization when sheet closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsInitialized(false);
+      setPromotorId("");
+      setCoPromotor1Id("");
+      setCoPromotor2Id("");
+    }
+  }, [isOpen]);
 
-    loadData();
-  }, [isOpen, mahasiswaId]);
+  const dosenList = dosenResult?.data || [];
+  const isEditMode = Boolean(plottingResult?.success && plottingResult.data);
+  const isDataLoading = dosenLoading || plottingLoading;
 
   const handleSubmit = async () => {
-    // Validasi hanya saat submit
     if (!promotorId || !coPromotor1Id || !coPromotor2Id) {
       toast.warning("Silakan pilih semua dosen untuk plotting");
       return;
@@ -166,9 +168,9 @@ export function PlottingSheet({
           </SheetDescription>
         </SheetHeader>
 
-        {isLoading && <SkeletonLoader />}
+        {isDataLoading && <SkeletonLoader />}
 
-        {!isLoading && (
+        {!isDataLoading && (
           <div className="grid gap-4 px-4">
             {/* Promotor Select */}
             <div className="space-y-2">
@@ -184,7 +186,7 @@ export function PlottingSheet({
                   >
                     {promotorId
                       ? dosenList.find(
-                          (dosen) => dosen.id?.toString() === promotorId
+                          (dosen: Dosen) => dosen.id?.toString() === promotorId
                         )?.name
                       : "Pilih Promotor..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -196,7 +198,7 @@ export function PlottingSheet({
                     <CommandList>
                       <CommandEmpty>Dosen tidak ditemukan.</CommandEmpty>
                       <CommandGroup className="max-h-[300px] overflow-auto">
-                        {dosenList.map((dosen) => (
+                        {dosenList.map((dosen: Dosen) => (
                           <CommandItem
                             key={dosen.id}
                             value={dosen.name}
@@ -245,7 +247,8 @@ export function PlottingSheet({
                   >
                     {coPromotor1Id
                       ? dosenList.find(
-                          (dosen) => dosen.id?.toString() === coPromotor1Id
+                          (dosen: Dosen) =>
+                            dosen.id?.toString() === coPromotor1Id
                         )?.name
                       : "Pilih Co-Promotor 1..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -257,7 +260,7 @@ export function PlottingSheet({
                     <CommandList>
                       <CommandEmpty>Dosen tidak ditemukan.</CommandEmpty>
                       <CommandGroup className="max-h-[300px] overflow-auto">
-                        {dosenList.map((dosen) => (
+                        {dosenList.map((dosen: Dosen) => (
                           <CommandItem
                             key={dosen.id}
                             value={dosen.name}
@@ -306,7 +309,8 @@ export function PlottingSheet({
                   >
                     {coPromotor2Id
                       ? dosenList.find(
-                          (dosen) => dosen.id?.toString() === coPromotor2Id
+                          (dosen: Dosen) =>
+                            dosen.id?.toString() === coPromotor2Id
                         )?.name
                       : "Pilih Co-Promotor 2..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -318,7 +322,7 @@ export function PlottingSheet({
                     <CommandList>
                       <CommandEmpty>Dosen tidak ditemukan.</CommandEmpty>
                       <CommandGroup className="max-h-[300px] overflow-auto">
-                        {dosenList.map((dosen) => (
+                        {dosenList.map((dosen: Dosen) => (
                           <CommandItem
                             key={dosen.id}
                             value={dosen.name}

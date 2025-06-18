@@ -11,3 +11,7 @@ export function useListMahasiswa(page = 1, search = "", limit = 10) {
 
   return api.get("/mahasiswa", params);
 }
+
+export function useGetPlotting(id: number) {
+  return api.get(`/plotting/${id}`);
+}

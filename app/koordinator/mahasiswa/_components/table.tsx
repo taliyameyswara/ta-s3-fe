@@ -10,6 +10,10 @@ import {
 } from "@/components/ui/table";
 import { Mahasiswa } from "@/type/mahasiswa";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { UserCog } from "lucide-react";
+import { useState } from "react";
+import { PlottingSheet } from "./plotting-sheet";
 import DropdownTableMenu from "./dropdown-table-menu";
 
 interface MahasiswaTableProps {
@@ -17,6 +21,16 @@ interface MahasiswaTableProps {
 }
 
 export function MahasiswaTable({ data }: MahasiswaTableProps) {
+  const [plottingSheetOpen, setPlottingSheetOpen] = useState(false);
+  const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(
+    null
+  );
+
+  const handlePlottingClick = (mahasiswa: Mahasiswa) => {
+    setSelectedMahasiswa(mahasiswa);
+    setPlottingSheetOpen(true);
+  };
+
   return (
     <div>
       <div className="rounded-md border">
@@ -26,6 +40,7 @@ export function MahasiswaTable({ data }: MahasiswaTableProps) {
               <TableHead>Mahasiswa</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Telepon</TableHead>
+
               <TableHead className="w-[60px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -60,6 +75,16 @@ export function MahasiswaTable({ data }: MahasiswaTableProps) {
                   <TableCell>{mahasiswa.email}</TableCell>
                   <TableCell>{mahasiswa.telepon || "-"}</TableCell>
                   <TableCell>
+                    <Button
+                      variant="primaryOutline"
+                      size="sm"
+                      onClick={() => handlePlottingClick(mahasiswa)}
+                    >
+                      <UserCog className="size-4" />
+                      Plotting
+                    </Button>
+                  </TableCell>
+                  <TableCell>
                     <DropdownTableMenu mahasiswa={mahasiswa} />
                   </TableCell>
                 </TableRow>
@@ -68,6 +93,16 @@ export function MahasiswaTable({ data }: MahasiswaTableProps) {
           </TableBody>
         </Table>
       </div>
+
+      {/* Plotting sheet */}
+      {plottingSheetOpen && selectedMahasiswa && (
+        <PlottingSheet
+          isOpen={plottingSheetOpen}
+          onClose={() => setPlottingSheetOpen(false)}
+          mahasiswaId={selectedMahasiswa.id || 0}
+          mahasiswaName={selectedMahasiswa.name}
+        />
+      )}
     </div>
   );
 }

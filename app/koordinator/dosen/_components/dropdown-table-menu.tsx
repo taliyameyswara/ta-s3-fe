@@ -10,15 +10,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Dosen } from "@/type/dosen";
 import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { AddEditDosenModal } from "./add-edit-modal";
 import { DeleteDialog } from "@/components/delete-modal";
+import { useRouter } from "next/navigation";
 
 interface DropdownTableMenuProps {
   dosen: Dosen;
 }
 
 export default function DropdownTableMenu({ dosen }: DropdownTableMenuProps) {
+  const router = useRouter();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedDosen, setSelectedDosen] = useState<Dosen | null>(null);
@@ -43,14 +44,11 @@ export default function DropdownTableMenu({ dosen }: DropdownTableMenuProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-            <Link
-              href={`/koordinator/dosen/${dosen.id}`}
-              className="cursor-pointer flex items-center"
-            >
-              <Eye className="size-4 mr-2" />
-              <span>Detail</span>
-            </Link>
+          <DropdownMenuItem
+            onClick={() => router.push(`/koordinator/dosen/${dosen.id}`)}
+          >
+            <Eye className="size-4" />
+            <span>Detail</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleEditClick}>
             <Pencil className="size-4" />

@@ -9,9 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Mahasiswa } from "@/type/mahasiswa";
-import { MoreHorizontal, Pencil, Trash2, UserCog } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { AddEditMahasiswaModal } from "./add-edit-modal";
-import { PlottingSheet } from "./plotting-sheet";
 import { DeleteDialog } from "@/components/delete-modal";
 
 interface DropdownTableMenuProps {
@@ -26,7 +25,6 @@ export default function DropdownTableMenu({
   const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(
     null
   );
-  const [plottingSheetOpen, setPlottingSheetOpen] = useState(false);
 
   const handleEditClick = () => {
     setSelectedMahasiswa(mahasiswa);
@@ -36,10 +34,6 @@ export default function DropdownTableMenu({
   const handleDeleteClick = () => {
     setSelectedMahasiswa(mahasiswa);
     setDeleteDialogOpen(true);
-  };
-
-  const handlePlottingClick = () => {
-    setPlottingSheetOpen(true);
   };
 
   return (
@@ -53,18 +47,14 @@ export default function DropdownTableMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={handleEditClick}>
-            <Pencil className="mr-2 size-4" />
+            <Pencil className="size-4" />
             Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handlePlottingClick}>
-            <UserCog className="mr-2 size-4" />
-            Plotting
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={handleDeleteClick}
             className="text-destructive focus:text-destructive"
           >
-            <Trash2 className="mr-2 size-4 text-destructive" />
+            <Trash2 className="size-4 text-destructive" />
             Hapus
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -90,14 +80,6 @@ export default function DropdownTableMenu({
           isMahasiswa={true}
         />
       )}
-
-      {/* Plotting sheet */}
-      <PlottingSheet
-        isOpen={plottingSheetOpen}
-        onClose={() => setPlottingSheetOpen(false)}
-        mahasiswaId={mahasiswa.id || 0}
-        mahasiswaName={mahasiswa.name}
-      />
     </>
   );
 }
